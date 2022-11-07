@@ -11,8 +11,9 @@ client = MongoClient("mongo:27017")
 database = client["test_database"]
 collection = database.collection
 
-counter_init_ = {"value": 0}
-collection.insert_one(counter_init_)
+if not collection.count_documents({"value": 0}):
+    counter_init_ = {"value": 0}
+    collection.insert_one(counter_init_)
 
 @app.route('/')
 def hello_world():
