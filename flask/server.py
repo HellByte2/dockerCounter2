@@ -34,7 +34,8 @@ def increment():
         "client_info": str(client_info),
         }
     )
-    result = str(current_counter["value"]+1) + ' -- ' + str(current_datetime) + ' -- ' + str(client_info)
+    next_value = current_counter["value"] + 1
+    result = str(next_value) + ' -- ' + str(current_datetime) + ' -- ' + str(client_info)
     return result
 
 @app.route('/about')
