@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import os
-
-from flask import Flask, request
-from pymongo import MongoClient
 from datetime import datetime
+from pymongo import MongoClient
+from flask import Flask, request
+
 
 app = Flask(__name__)
 
@@ -25,16 +25,14 @@ def hello_world():
 def increment():
     current_counter = collection.find().sort('value', -1)[0]
     current_datetime = datetime.now()
-    client_info = request.user_agent 
-    
+    client_info = request.user_agent
     collection.insert_one(
         {
         "value": current_counter["value"]+1,
-        "datetime": current_datetime, 
+        "datetime": current_datetime,
         "client_info": str(client_info),
         }
     )
-    
     result = str(current_counter["value"]+1) + ' -- ' + str(current_datetime) + ' -- ' + str(client_info)
     return result
 
@@ -46,4 +44,3 @@ def hello():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=os.environ.get("FLASK_SERVER_PORT", 9090), debug=True)
-
