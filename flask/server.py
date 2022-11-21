@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Flask server ofr counter application"""
 import os
 import socket
 from datetime import datetime
@@ -18,12 +19,14 @@ if not collection.count_documents({"value": 0}):
 
 @app.route('/')
 def hello_world():
+    """ Return value of counter"""
     counter = collection.find().sort('value', -1)[0]
     result = str(counter["value"])
     return result
 
 @app.route('/stat')
 def increment():
+    """Increase value of counter by 1, save user agent and current date"""
     current_counter = collection.find().sort('value', -1)[0]
     current_datetime = datetime.now()
     client_info = request.user_agent
@@ -40,6 +43,7 @@ def increment():
 
 @app.route('/about')
 def hello():
+    """Return name of creator and hostname"""
     html = "<h3>Hello {name}!</h3>" \
            "<b>Hostname:</b> {hostname}<br/>"
     return html.format(name="Илья", hostname=socket.gethostname())
