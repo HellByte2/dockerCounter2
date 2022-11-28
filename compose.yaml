@@ -12,6 +12,8 @@ services:
       - backend
 
   backend:
+    deploy:
+      replicas: 4
     build:
       context: flask
       target: builder
