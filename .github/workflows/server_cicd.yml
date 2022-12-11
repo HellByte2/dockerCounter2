@@ -1,0 +1,46 @@
+name: Server CI and CD
+
+on: [push]
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint pytest
+        pip install -r py_server/requirements.txt
+    - name: Analysing the code with pylint
+      run: |
+        pylint $(git ls-files '*.py')
+    - name: Test with pytest
+      run: |
+          pytest py_server/
+          
+  CD: 
+    needs: CI
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout  
+      - uses: actions/checkout@v2
+
+      # Step 2: Add SSH credentials to your GitHub CI/CD instance 
+      - name: Add SSH Credentials
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }} 
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }} 
+
+      # Step 3: Deploy!
+      - name: Deploy to Staging
+        uses: JorgenVatle/docker-compose-deploy@v1.0
+        with:
+          deploy_targets: 'server-1.example.com, server-2.example.com' # required, comma separated list of servers to deploy to.
+          compose_file: 'docker-compose.yaml' # optional, path/filename of your docker-compose file. Defaults to 'docker-compose.yml'
+      
